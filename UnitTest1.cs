@@ -110,26 +110,120 @@ namespace HW_7_tasks
         }
 
 
-        //private int nextBigger(int number)
-        //{
-        //    int numberCopy = number;
-        //    int digitAmount = number.ToString().Length;
+        private int[] Split(int number)
+        {
+            int digitsAmount = number.ToString().Length;
+            int[] digs = new int[digitsAmount];
 
-        //    int prevDigit = -1;
-        //    int pos = -1;
-        //    for (int i = digitAmount - 1; i >= 0;)
-        //    {
-        //        int last = numberCopy % 10;
-        //        pos += 1;
-        //        if (last < prevDigit)
-        //        {
-        //            break;
-        //        }
-        //        if (i == 0)
-        //            return -1;
-        //    }
-        //}
+            for(int i = 0; i< digitsAmount; i++)
+            {
+                int currentDisAmount = number.ToString().Length;
+                int remainingPart = number % (int)(Math.Pow(10, currentDisAmount - 1));
+                int digit = (number - remainingPart) / (int)(Math.Pow(10, currentDisAmount - 1));
+                digs[i] = digit;
+                number = remainingPart;
+                if (currentDisAmount - 1 > number.ToString().Length)
+                    i += currentDisAmount - number.ToString().Length - 1;
+            }
 
+            return digs;
+        }
+
+
+        public void PartialSort(int[] array, int startIndex, int endIndex)
+        {
+            int[] sortedList = new int[(endIndex - startIndex) + 1];
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                sortedList[i - startIndex] = array[i];
+            }
+            List<int> newList = new List<int>(sortedList);
+            newList.Sort();
+            sortedList = newList.ToArray();
+
+            for (int i = 0; i < sortedList.Length; i++)
+                array[i + startIndex] = sortedList[i];
+        }
+
+        private int Merge(int[] array)
+        {
+            int x = 0;
+
+            for (int i = 0; i < array.Length; i++)
+                x += array[i]*(int)(Math.Pow(10, array.Length - 1 - i));
+
+            return x;
+        }
+        private int NextBigger(int number) // Task 6
+        {
+            int[] digits = Split(number);
+            int pos = -1;
+            for (int i = digits.Length - 2; i >= 0; i--)
+            {
+                pos = i;
+                if (digits[i] < digits[i + 1])
+                    break;
+                if (i == 0)
+                    return -1;
+            }
+
+            int min = digits[pos+1];
+            int minPos = pos + 1;
+            for (int i = pos + 2; i < digits.Length; i++)
+                if (min > digits[i] && digits[i] > digits[pos])
+                {
+                    minPos = i;
+                    min = digits[i];
+                }
+
+            digits[minPos] = digits[pos];
+            digits[pos] = min;
+
+            PartialSort(digits, pos+1, digits.Length-1);
+            return Merge(digits);
+        }
+
+
+        private string GetIPFrom32(uint number) // Task 7
+        {
+            string numberBin = "";
+            while (number != 0)
+            {
+                if (number % 2 == 0)
+                {
+                    numberBin += "0";
+                    number /= 2;
+                }
+                else
+                {
+                    numberBin += "1";
+                    number = (number - 1) / 2;
+                }
+            }
+
+            for (int i = 0; numberBin.Length != 32; i++)
+                numberBin += "0";
+
+            char[] binCodeArr = numberBin.ToCharArray();
+            Array.Reverse(binCodeArr);
+            numberBin = new string(binCodeArr);
+
+
+            string IP = "";
+            for (int i = 0; i < 4; i++)
+            {
+                string part = numberBin.Substring(i*8,8);
+                int decodedPart = 0;
+                for (int j = 0; j < 8; j++)
+                    decodedPart += (part[j] == '1')? (int)Math.Pow(2, 7-j) : 0;
+                IP += decodedPart.ToString();
+                if (i != 3)
+                    IP += ".";
+            }
+
+            return IP;
+        }
 
         // Tests for Task 1
         [Test]
@@ -217,6 +311,46 @@ namespace HW_7_tasks
         {
             string list = "Fred:Corwill;Wilfred:Corwill;Barney:Tornbull;Betty:Tornbull;Bjon:Tornbull;Raphael:Corwill;Alfred:Corwill";
             Assert.IsTrue(string.Equals(Meeting(list), "(Corwill, Alfred)(Corwill, Fred)(Corwill, Raphael)(Corwill, Wilfred)(Tornbull, Barney)(Tornbull, Betty)(Tornbull, Bjon)"));
+        }
+
+
+        // Tests for Task 6
+
+        [Test]
+        public void Task6Test1()
+        {
+            int x = 43713210;
+            Assert.IsTrue(NextBigger(x) == 43720113);
+        }
+
+        [Test]
+        public void Task6Test2()
+        {
+            int x = 2221;
+            Assert.IsTrue(NextBigger(x) == -1);
+        }
+
+        [Test]
+        public void Task6Test3()
+        {
+            int x = 2017;
+            Assert.IsTrue(NextBigger(x) == 2071);
+        }
+
+        // Tests for Task 7
+
+        [Test]
+        public void Task7Test1()
+        {
+            uint x = 32;
+            Assert.IsTrue(string.Equals(GetIPFrom32(x), "0.0.0.32"));
+        }
+
+        [Test]
+        public void Task7Test2()
+        {
+            uint x = 2149583361;
+            Assert.IsTrue(string.Equals(GetIPFrom32(x), "128.32.10.1"));
         }
 
     }

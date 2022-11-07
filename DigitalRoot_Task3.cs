@@ -7,21 +7,22 @@ namespace HW_7_tasks
 {
     class TaskThreeTest
     {
-        private int DigitalRoot(int number, int sum)
+        private int DigitSum(int number)
         {
-            if (number == 0)
-                return sum;
-
-            int digitsAmount = number.ToString().Length;
-            int remainingPart = number % (int)(Math.Pow(10, digitsAmount - 1));
-            int digit = (number - remainingPart) / (int)(Math.Pow(10, digitsAmount - 1));
-
-            return DigitalRoot(remainingPart, sum + digit);
+            string numberStr = number.ToString();
+            int sum = 0;
+            foreach (char c in numberStr)
+                sum += c - '0';
+            return sum;
         }
-
-        private int DigitalRoot(int number)
+        public int DigitalRoot(int number)
         {
-            return DigitalRoot(number, 0);
+            if (number < 10)
+                return number;
+
+            int digSum = DigitSum(number);
+
+            return DigitalRoot(digSum);
         }
 
         [Test]
@@ -29,7 +30,8 @@ namespace HW_7_tasks
         public void Test1()
         {
             int i = 123471;
-            Assert.IsTrue(DigitalRoot(i) == 18);
+            int root = DigitalRoot(i);
+            Assert.IsTrue(root == 9);
         }
 
         [Test]

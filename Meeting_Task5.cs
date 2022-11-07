@@ -45,7 +45,7 @@ namespace HW_7_tasks
             for (int i = 0; i < guestsAmount; i++)
                 result += $"({names[i]})";
 
-            return result;
+            return result.ToUpper() ;
         }
 
 
@@ -60,7 +60,7 @@ namespace HW_7_tasks
         public void Test2()
         {
             string list = "Fred:Corwill;Wilfred:Corwill;Barney:Tornbull;Betty:Tornbull;Bjon:Tornbull;Raphael:Corwill;Alfred:Corwill";
-            Assert.IsTrue(string.Equals(Meeting(list), "(Corwill, Alfred)(Corwill, Fred)(Corwill, Raphael)(Corwill, Wilfred)(Tornbull, Barney)(Tornbull, Betty)(Tornbull, Bjon)"));
+            Assert.IsTrue(string.Equals(Meeting(list), "(CORWILL, ALFRED)(CORWILL, FRED)(CORWILL, RAPHAEL)(CORWILL, WILFRED)(TORNBULL, BARNEY)(TORNBULL, BETTY)(TORNBULL, BJON)"));
         }
     }
 }

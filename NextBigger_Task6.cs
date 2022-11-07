@@ -55,6 +55,8 @@ namespace HW_7_tasks
         private int NextBigger(int number) // Task 6
         {
             int[] digits = Split(number);
+            if (digits.Length == 1)
+                return -1;
             int pos = -1;
             for (int i = digits.Length - 2; i >= 0; i--)
             {
@@ -92,7 +94,7 @@ namespace HW_7_tasks
         [Test]
         public void Test2()
         {
-            int x = 2221;
+            int x = 9;
             Assert.IsTrue(NextBigger(x) == -1);
         }
 
